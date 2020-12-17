@@ -1,0 +1,37 @@
+import string
+
+testable_chars = list(map(ord, string.printable))
+kodet_besked = [
+	0x8F, 0x57, 0xF0, 0xB7, 0xA2, 0x9D, 0xAC, 0xAD, 0xAE, 0x9B, 0x93, 0x98,
+	0x98, 0x93, 0x95, 0x96, 0xA3, 0xA0, 0x9D, 0x9E, 0xAB, 0xAE, 0xAF, 0xA8,
+	0x9C, 0xAC, 0xA5, 0xAF, 0xB3, 0xAF, 0xC7, 0xBC, 0xA7, 0xB2, 0xB5, 0xB3,
+	0xAA, 0xA5, 0xB3, 0xB8, 0xBE, 0xCA, 0xC3, 0xC8, 0xCB, 0xBF, 0xD0, 0xDA
+]
+
+def encrypt(c, nc, i):
+    c = (c ^ 64) & 0xFF
+    c = (c - 1) & 0xFF
+    c = (c ^ 1) & 0xFF
+    c = (c + i) & 0xFF
+    c = (c + nc) & 0xFF
+    return c
+
+def test_nc(test, expected, i):
+    for nc in testable_chars:
+        encrypted = encrypt(test, nc, i)
+        if encrypted == expected:
+            return test, nc
+    return 0, 0
+
+def run(besked):
+    for c in testable_chars:
+        result = ""
+        test_char = c
+        for i, b in enumerate(besked):
+            test, nc = test_nc(test_char, b, i)
+            result += chr(test)
+            test_char = nc
+        if "nc3" in result:
+            print(result)
+
+run(kodet_besked)
